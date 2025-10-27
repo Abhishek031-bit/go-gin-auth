@@ -14,6 +14,7 @@ func main() {
 	godotenv.Load()
 	router := gin.Default()
 	db.ConnectDB()
+	router.GET("/", controllers.HealthCheck)
 	authGroup := router.Group("/auth")
 	{
 		authGroup.POST("/register", controllers.Register)
