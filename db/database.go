@@ -14,19 +14,22 @@ func ConnectDB() {
 	db, err := gorm.Open(sqlite.Open("users.db"), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})
+	line := "+-------------------------------+"
 	if err != nil {
-		println("+-------------------------------+")
+		println(line)
 		println("| ❌ Failed to connect database |")
-		panic("+-------------------------------+")
+		println(line)
+		panic(err)
 	}
 	println("+--------------------------+")
 	println("| ✅ Connected to database |")
 	println("+--------------------------+")
 	err = db.AutoMigrate(&models.User{}, &models.File{})
 	if err != nil {
-		println("+-------------------------------+")
+		println(line)
 		println("| ❌ Failed to migrate database |")
-		panic("+-------------------------------+")
+		println(line)
+		panic(err)
 	}
 	DB = db
 }
