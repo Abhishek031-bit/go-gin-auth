@@ -1,0 +1,22 @@
+# Build results
+**/bin/
+**/obj/
+**/Debug/
+**/Release/
+
+
+
+
+# VS Code
+.vscode
+*.code-workspace
+
+# Visual Studio Code
+.vscode
+
+
+*.db
+uploads/
+.env
+tmp/
+*.exe
