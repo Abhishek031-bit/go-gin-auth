@@ -12,6 +12,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// UploadFile godoc
+// @Security ApiKeyAuth
+// @Summary Upload a file
+// @Description Uploads a file for the authenticated user
+// @Tags user
+// @Accept mpfd
+// @Produce json
+// @Param file formData file true "File to upload"
+// @Success 200 {object} map[string]string "{"message": "File uploaded successfully", "file_name": "example.txt", "path": "uploads/user_at_example.com/example.txt"}"
+// @Failure 400 {object} map[string]string "{"error": "Bad Request"}"
+// @Failure 401 {object} map[string]string "{"error": "Unauthorized"}"
+// @Failure 500 {object} map[string]string "{"error": "Internal Server Error"}"
+// @Router /user/upload [post]
 func UploadFile(c *gin.Context) {
 	userEmail, exists := c.Get("userEmail")
 	if !exists {
@@ -56,9 +69,20 @@ func UploadFile(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, &gin.H{"message": "File uploaded successfully", "file_name": file.Filename, "path": fullFilePath})
+	c.JSON(http.StatusCreated, &gin.H{"message": "File uploaded successfully", "file_name": file.Filename, "path": fullFilePath})
 }
 
+// ListUserFiles godoc
+// @Security ApiKeyAuth
+// @Summary List user files
+// @Description Lists all files uploaded by the authenticated user
+// @Tags user
+// @Accept */*
+// @Produce json
+// @Success 200 {object} map[string]interface{} "{"total": 1, "files": [{"ID": 1, "CreatedAt": "2023-01-01T00:00:00Z", "UpdatedAt": "2023-01-01T00:00:00Z", "DeletedAt": null, "FilePath": "uploads/user_at_example.com/file.txt", "OriginalName": "file.txt", "UserID": 1}]}"
+// @Failure 401 {object} map[string]string "{"error": "Unauthorized"}"
+// @Failure 500 {object} map[string]string "{"error": "Internal Server Error"}"
+// @Router /user/download [get]
 func ListUserFiles(c *gin.Context) {
 	userEmail, _ := c.Get("userEmail")
 	var user models.User
@@ -74,6 +98,20 @@ func ListUserFiles(c *gin.Context) {
 	c.JSON(http.StatusOK, &gin.H{"total": len(files), "files": files})
 }
 
+// DownloadFile godoc
+// @Security ApiKeyAuth
+// @Summary Download a user file
+// @Description Downloads a specific file owned by the authenticated user
+// @Tags user
+// @Accept */*
+// @Produce octet-stream
+// @Param fileID path int true "File ID"
+// @Success 200 {file} byte "File content"
+// @Failure 401 {object} map[string]string "{"error": "Unauthorized"}"
+// @Failure 403 {object} map[string]string "{"error": "Forbidden"}"
+// @Failure 404 {object} map[string]string "{"error": "File not found"}"
+// @Failure 500 {object} map[string]string "{"error": "Internal Server Error"}"
+// @Router /user/download/{fileID} [get]
 func DownloadFile(c *gin.Context) {
 	fileID := c.Param("fileID")
 
